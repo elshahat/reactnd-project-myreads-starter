@@ -1,52 +1,16 @@
 import React, { Component } from "react";
 import BookShelf from "./BookShelf";
-import * as BooksAPI from './BooksAPI';
 import { Link } from "react-router-dom";
 import Loading from './icons/loading.svg';
+import PropTypes from 'prop-types';
 
 class ListBooks extends Component {
-    state = {
-        loading: true,
-        updating: true,
-        shelves: {
-            currentlyReading: [],
-            wantToRead: [],
-            read: []
-        }
-    }
-
     componentDidMount() {
-        this.getBooks();
-    }
-
-    // Get the list of books
-    getBooks() {
-        BooksAPI.getAll().then(books => {
-            this.setState({
-                shelves: {
-                    currentlyReading: books.filter(book => book.shelf === 'currentlyReading'),
-                    wantToRead: books.filter(book => book.shelf === 'wantToRead'),
-                    read: books.filter(book => book.shelf === 'read')
-                }
-            });
-        }).finally(() => {
-            this.setState({
-                loading: false,
-                updating: false
-            });
-        });
-    }
-
-    // Show the loader on every book shelf change
-    showLoading() {
-        this.setState({
-            updating: true
-        });
+        this.props.getBooks();
     }
 
     render() {
-        const { shelves, loading, updating } = this.state;
-
+        const { shelves, loading, updating, getBooks, showLoading } = this.props;
         return (
             <div className="list-books">
                 <div className="list-books-title">
@@ -60,8 +24,8 @@ class ListBooks extends Component {
                                 loading={loading}
                                 shelf={shelf}
                                 books={shelves[shelf]}
-                                updateShelves={() => this.getBooks()}
-                                showLoading={() => this.showLoading()}
+                                updateShelves={() => getBooks()}
+                                showLoading={() => showLoading()}
                             />
                         )}
                     </div>
@@ -73,6 +37,14 @@ class ListBooks extends Component {
             </div>
         )
     }
+}
+
+ListBooks.propTypes = {
+    shelves: PropTypes.object.isRequired,
+    loading: PropTypes.bool.isRequired,
+    updating: PropTypes.bool.isRequired,
+    getBooks: PropTypes.func.isRequired,
+    showLoading: PropTypes.func.isRequired
 }
 
 export default ListBooks;
