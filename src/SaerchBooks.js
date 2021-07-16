@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { debounce } from 'throttle-debounce';
 import { Link } from "react-router-dom";
 import * as BooksAPI from './BooksAPI';
 import Book from "./Book";
@@ -9,7 +10,7 @@ class SearchBooks extends Component {
         updatedBooks: []
     }
 
-    search(value) {
+    searchForBooks = debounce(500, false, value => {
         if (value) {
             BooksAPI.search(value).then(booksResults => {
                 if (booksResults.error) {
@@ -27,7 +28,7 @@ class SearchBooks extends Component {
                 books: []
             });
         }
-    }
+    });
 
     handleBooksSync(booksResults) {
         const { books } = this.props;
@@ -55,7 +56,7 @@ class SearchBooks extends Component {
                     <div className="search-books-input-wrapper">
                         <input
                             type="text"
-                            onChange={(e) => this.search(e.target.value)}
+                            onChange={(e) => this.searchForBooks(e.target.value)}
                             placeholder="Search by title or author"/>
                     </div>
                 </div>
